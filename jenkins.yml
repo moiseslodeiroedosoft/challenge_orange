@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: jenkins
+  name: jenkins
+spec:
+  containers:
+  - image: jenkins:orange
+    name: jenkins
+    ports:
+    - containerPort: 8080
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+---
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  name: jenkins
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    run: jenkins
+  #type: NodePort
+  type: ClusterIP
+status:
+  loadBalancer: {}

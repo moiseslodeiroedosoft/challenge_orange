@@ -1,0 +1,7 @@
+git:4.10.0
+maven-plugin:3.15.1
+pipeline-maven:3.10.0
+kubernetes:1.30.8
+kubernetes-cli:1.10.3
+workflow-multibranch:2.26
+nodejs:1.4.2
