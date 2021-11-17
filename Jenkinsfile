@@ -20,15 +20,21 @@ pipeline {
         }
         stage('Salida job') {
             steps {
-                sh "echo ${params.NAME}"
-                sh "echo ${params.LASTNAME}"
-                sh "echo ${params.CHOICE}"
-                sh "echo ${params.BRANCH}"
+                echo "${params.NAME}"
+                echo "${params.LASTNAME}"
+                echo "${params.CHOICE}"
+                echo "${params.BRANCH}"
 
-                sh "echo 'process.env' > salida.js"
+                echo "'process.env' > salida.js"
                 sh "node salida.js"
 
             }
+        }
+    }
+    post {
+        always {
+            echo 'Enviar correo'
+            // deleteDir() /* clean up our workspace */
         }
     }
 }
