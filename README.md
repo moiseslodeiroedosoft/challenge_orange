@@ -10,7 +10,7 @@
 En este caso, a modo de ejemplo, se ha hecho uso del sistema _minikube_ para emular un clúster de un solo nodo, con 4096Mb de RAM y de una CPU virtual.
 
 ```sh
-minikube start --nodes 1 --mount --mount-string="$HOME/Workspace/resources/images:/srv/images" --memory 4096 --cpus=2 --addons=ingress --kubernetes-version=latest --extra-config=apiserver.feature-gates=RemoveSelfLink=false
+minikube start --nodes 1 --mount --mount-string="$HOME/images:/srv/images" --memory 4096 --cpus=2 --addons=ingress --kubernetes-version=latest --extra-config=apiserver.feature-gates=RemoveSelfLink=false
 ```
 
 ## Paso 2 - Compilar imagen de Jenkins con las dependencias y plugins instalados
