@@ -1,35 +1,93 @@
+# Persistent Volume Claim
 apiVersion: v1
-kind: Pod
+kind: PersistentVolumeClaim
 metadata:
-  creationTimestamp: null
-  labels:
-    run: jenkins
-  name: jenkins
+  name: jenkins-pv-claim
 spec:
-  containers:
-  - image: jenkins:orange
-    name: jenkins
-    ports:
-    - containerPort: 8080
-    resources: {}
-  dnsPolicy: ClusterFirst
-  restartPolicy: Always
-status: {}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+
+# Deployment Config
 ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      serviceAccountName: jenkins-admin
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+      containers:
+        - name: jenkins
+          image: jenkins:orange
+          resources:
+            limits:
+              memory: "4Gi"
+              cpu: "1000m"
+            requests:
+              memory: "1000Mi"
+              cpu: "500m"
+          ports:
+            - name: httpport
+              containerPort: 8080
+            - name: jnlpport
+              containerPort: 50000
+          livenessProbe:
+            httpGet:
+              path: "/login"
+              port: 8080
+            initialDelaySeconds: 90
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: "/login"
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: jenkins-data
+              mountPath: /var/jenkins_home
+      volumes:
+        - name: jenkins-data
+          persistentVolumeClaim:
+            claimName: jenkins-pv-claim
+
+# Service Config
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  creationTimestamp: null
-  name: jenkins
+  name: jenkins-service
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: /
+    prometheus.io/port: "8080"
 spec:
-  ports:
-  - port: 8080
-    protocol: TCP
-    targetPort: 8080
   selector:
-    run: jenkins
-  #type: NodePort
-  type: ClusterIP
-status:
-  loadBalancer: {}
+    app: jenkins
+  type: NodePort
+  ports:
+    - name: httpport
+      port: 8080
+      targetPort: 8080
+      nodePort: 32000
+    - name: jnlpport
+      port: 50000
+      targetPort: 50000

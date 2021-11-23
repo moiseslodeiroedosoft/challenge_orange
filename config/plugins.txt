@@ -4,4 +4,6 @@ pipeline-maven:3.10.0
 kubernetes:1.30.8
 kubernetes-cli:1.10.3
 workflow-multibranch:2.26
+workflow-aggregator:2.6
 nodejs:1.4.2
+blueocean:1.25.2
