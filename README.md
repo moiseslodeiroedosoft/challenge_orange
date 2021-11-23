@@ -19,6 +19,8 @@ Durante este paso, no sólo se hará la compilación sino que la imagen será ca
 
 ### Montar carpetas locales en nodos donde almacenar imágenes docker
 
+Si no hubo problemas a la hora de hacer el montaje de ficheros al crear el cluster, o se usó otro, se puede omitir este paso.
+
 ```sh
 minikube mount ~/images:/srv/images &
 ```
